@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PressDistributionSystemWebApp.Models;
 
 namespace PressDistributionSystemWebApp.Data
 {
@@ -7,7 +8,13 @@ namespace PressDistributionSystemWebApp.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
-        {
+        {            
         }
+
+        public DbSet<Distributor> Distributors { get; set; }
+        public DbSet<Kiosk> Kiosks { get; set; }
+        public DbSet<KioskPublication> KioskPublications { get; set; }
+        public DbSet<Publication> Publications { get; set; }
+        public DbSet<PublicationDistributor> PublicationDistributors { get; set; }
     }
 }
