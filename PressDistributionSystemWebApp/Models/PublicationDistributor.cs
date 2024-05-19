@@ -4,8 +4,8 @@ namespace PressDistributionSystemWebApp.Models
 {
     public class PublicationDistributor
     {
-        public int Id { get; set; }
-        public int Quantity { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int Quantity { get; set; }
 
         Distributor Distributor { get; set; }
 

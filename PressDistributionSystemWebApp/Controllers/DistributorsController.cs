@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
+using PressDistributionSystemWebApp.DTO;
 using PressDistributionSystemWebApp.Models;
 
 namespace PressDistributionSystemWebApp.Controllers
@@ -54,11 +55,13 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Distributor distributor)
+        public async Task<IActionResult> Create(DistributorInsertDTO distributor)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(distributor);
+                var insertedDistributor = new Distributor();
+                insertedDistributor.Name = distributor.Name;
+                _context.Add(insertedDistributor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -78,7 +81,10 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 return NotFound();
             }
-            return View(distributor);
+
+            var updatedDistributor = new DistributorUpdateDTO();
+            updatedDistributor.Name = distributor.Name;
+            return View(updatedDistributor);
         }
 
         // POST: Distributors/Edit/5
@@ -86,7 +92,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Distributor distributor)
+        public async Task<IActionResult> Edit(int id, DistributorUpdateDTO distributor)
         {
             if (id != distributor.Id)
             {
@@ -97,7 +103,12 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(distributor);
+                    var distributorToUpdate = await _context.Distributors.FindAsync(id);
+                    if (distributorToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+                    distributorToUpdate.Name = distributor.Name;                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

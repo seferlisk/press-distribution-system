@@ -2,12 +2,12 @@
 {
     public class Publication
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public DateOnly ShipmentDate { get; set; }
-        public DateOnly ReturnDate { get; set; }
-        public string Issue { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string Name { get; set; }
+        public virtual DateOnly ShipmentDate { get; set; }
+        public virtual DateOnly ReturnDate { get; set; }
+        public virtual string Issue { get; set; }
 
-        public ICollection<PublicationDistributor> PublicationDistributors { get; set; }
+        public virtual ICollection<PublicationDistributor> PublicationDistributors { get; set; }
     }
 }

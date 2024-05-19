@@ -1,15 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PressDistributionSystemWebApp.Models
 {
     public class Kiosk
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string? Name { get; set; }
+      
+        public virtual Distributor? Distributor { get; set; }
 
-        public Distributor Distributor { get; set; }
-
-        public ICollection<KioskPublication> KioskPublications { get; set; }
+        public virtual ICollection<KioskPublication> KioskPublications { get; set; }
 
     }
 }

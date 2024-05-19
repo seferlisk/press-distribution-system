@@ -4,13 +4,13 @@ namespace PressDistributionSystemWebApp.Models
 {
     public class KioskPublication
     {
-        public int Id { get; set; }
-        public int Quantity { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int Quantity { get; set; }
 
 
-        public Kiosk Kiosk { get; set; }
+        public virtual Kiosk Kiosk { get; set; }
 
-        public PublicationDistributor PublicationDistributor { get; set; }
+        public virtual PublicationDistributor PublicationDistributor { get; set; }
 
     }
 }

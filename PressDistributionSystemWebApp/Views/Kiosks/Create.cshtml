@@ -1,4 +1,4 @@
-﻿@model PressDistributionSystemWebApp.Models.Kiosk
+﻿@model PressDistributionSystemWebApp.DTO.KioskInsertDTO
 
 @{
     ViewData["Title"] = "Create";
@@ -13,9 +13,15 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DistributorId" class="control-label">Distributor</label>
+                @Html.DropDownListFor(m => m.DistributorId, Model.Distributors, "")
+                <br/>
+                <span asp-validation-for="DistributorId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

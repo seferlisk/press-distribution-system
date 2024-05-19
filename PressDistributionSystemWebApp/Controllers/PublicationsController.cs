@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
+using PressDistributionSystemWebApp.DTO;
 using PressDistributionSystemWebApp.Models;
 
 namespace PressDistributionSystemWebApp.Controllers
@@ -54,11 +55,16 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ShipmentDate,ReturnDate,Issue")] Publication publication)
+        public async Task<IActionResult> Create(PublicationInsertDTO publication)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(publication);
+                var insertedPublication = new Publication();                
+                insertedPublication.Name = publication.Name;
+                insertedPublication.ShipmentDate = publication.ShipmentDate;
+                insertedPublication.ReturnDate = publication.ReturnDate;
+                insertedPublication.Issue = publication.Issue;
+                _context.Add(insertedPublication);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -78,7 +84,13 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 return NotFound();
             }
-            return View(publication);
+
+            var updatedPublication = new PublicationUpdateDTO();
+            updatedPublication.Name = publication.Name;
+            updatedPublication.ShipmentDate = publication.ShipmentDate;
+            updatedPublication.ReturnDate = publication.ReturnDate;
+            updatedPublication.Issue = publication.Issue;
+            return View(updatedPublication);
         }
 
         // POST: Publications/Edit/5
@@ -86,7 +98,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ShipmentDate,ReturnDate,Issue")] Publication publication)
+        public async Task<IActionResult> Edit(int id, PublicationUpdateDTO publication)
         {
             if (id != publication.Id)
             {
@@ -97,7 +109,15 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(publication);
+                    var publicationToUpdate = await _context.Publications.FindAsync(id);
+                    if (publicationToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+                    publicationToUpdate.Name = publication.Name;
+                    publicationToUpdate.ShipmentDate = publication.ShipmentDate;
+                    publicationToUpdate.ReturnDate = publication.ReturnDate;
+                    publicationToUpdate.Issue = publication.Issue;                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

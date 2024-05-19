@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
+using PressDistributionSystemWebApp.DTO;
 using PressDistributionSystemWebApp.Models;
 
 namespace PressDistributionSystemWebApp.Controllers
@@ -46,7 +47,26 @@ namespace PressDistributionSystemWebApp.Controllers
         // GET: Kiosks/Create
         public IActionResult Create()
         {
-            return View();
+            var kiosk = new KioskInsertDTO();
+            kiosk.Distributors = GetDistributors();
+
+            return View(kiosk);
+        }
+
+
+        public IEnumerable<SelectListItem> GetDistributors()
+        {
+            var distributors = new List<SelectListItem>();
+
+
+            distributors.AddRange(_context.Distributors.Select(s => new SelectListItem()
+            {
+                Value = s.Id.ToString(),
+                Text = s.Name
+            }));
+
+
+            return distributors;
         }
 
         // POST: Kiosks/Create
@@ -54,11 +74,14 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Kiosk kiosk)
+        public async Task<IActionResult> Create(KioskInsertDTO kiosk)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(kiosk);
+                var kioskToInsert = new Kiosk();
+                kioskToInsert.Name = kiosk.Name;
+                kioskToInsert.Distributor = _context.Distributors.Where(w => w.Id == kiosk.DistributorId).FirstOrDefault();
+                _context.Add(kioskToInsert);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -78,7 +101,15 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 return NotFound();
             }
-            return View(kiosk);
+            var kioskVM = new KioskUpdateDTO()
+            {
+                DistributorName = kiosk.Distributor!.Name,
+                Name = kiosk.Name,
+                Id = kiosk.Id
+            };
+
+
+            return View(kioskVM);
         }
 
         // POST: Kiosks/Edit/5
@@ -86,7 +117,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Kiosk kiosk)
+        public async Task<IActionResult> Edit(int id, KioskUpdateDTO kiosk)
         {
             if (id != kiosk.Id)
             {
@@ -97,7 +128,12 @@ namespace PressDistributionSystemWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(kiosk);
+                    var kioskToUpdate = await _context.Kiosks.FindAsync(id);
+                    if (kioskToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+                    kioskToUpdate.Name = kiosk.Name;                    
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
