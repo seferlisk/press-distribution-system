@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PressDistributionSystemWebApp.Models;
 
 namespace PressDistributionSystemWebApp.Data
 {

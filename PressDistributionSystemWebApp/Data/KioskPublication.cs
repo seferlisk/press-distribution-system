@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PressDistributionSystemWebApp.Models
+namespace PressDistributionSystemWebApp.Data
 {
     public class KioskPublication
     {

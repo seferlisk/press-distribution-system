@@ -1,4 +1,5 @@
-﻿@model PressDistributionSystemWebApp.Models.Publication
+﻿@using PressDistributionSystemWebApp.Data
+@model Publication
 
 @{
     ViewData["Title"] = "Create";
@@ -32,6 +33,11 @@
                 <label asp-for="Issue" class="control-label"></label>
                 <input asp-for="Issue" class="form-control" />
                 <span asp-validation-for="Issue" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

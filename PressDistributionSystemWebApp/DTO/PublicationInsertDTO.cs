@@ -16,6 +16,9 @@ namespace PressDistributionSystemWebApp.DTO
         [StringLength(60, MinimumLength = 1)]
         public string Issue { get; set; }
 
+        [Required]
+        public int Quantity { get; set; }
+
         //public ICollection<PublicationDistributor> PublicationDistributors { get; set; }
     }
 }

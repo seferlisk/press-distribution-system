@@ -64,6 +64,7 @@ namespace PressDistributionSystemWebApp.Controllers
                 insertedPublication.ShipmentDate = publication.ShipmentDate;
                 insertedPublication.ReturnDate = publication.ReturnDate;
                 insertedPublication.Issue = publication.Issue;
+                insertedPublication.Quantity = publication.Quantity;
                 _context.Add(insertedPublication);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -90,6 +91,7 @@ namespace PressDistributionSystemWebApp.Controllers
             updatedPublication.ShipmentDate = publication.ShipmentDate;
             updatedPublication.ReturnDate = publication.ReturnDate;
             updatedPublication.Issue = publication.Issue;
+            updatedPublication.Quantity= publication.Quantity;
             return View(updatedPublication);
         }
 
@@ -117,7 +119,8 @@ namespace PressDistributionSystemWebApp.Controllers
                     publicationToUpdate.Name = publication.Name;
                     publicationToUpdate.ShipmentDate = publication.ShipmentDate;
                     publicationToUpdate.ReturnDate = publication.ReturnDate;
-                    publicationToUpdate.Issue = publication.Issue;                    
+                    publicationToUpdate.Issue = publication.Issue;   
+                    publicationToUpdate.Quantity = publication.Quantity;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

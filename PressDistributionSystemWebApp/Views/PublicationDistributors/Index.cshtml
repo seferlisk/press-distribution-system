@@ -1,5 +1,4 @@
-﻿@using PressDistributionSystemWebApp.Data
-@model IEnumerable<Kiosk>
+﻿@model IEnumerable<PressDistributionSystemWebApp.Data.PublicationDistributor>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,7 +13,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th></th>
         </tr>
@@ -23,7 +22,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
