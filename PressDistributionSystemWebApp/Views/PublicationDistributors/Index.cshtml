@@ -1,35 +1,53 @@
-﻿@model IEnumerable<PressDistributionSystemWebApp.Data.PublicationDistributor>
+﻿@model PressDistributionSystemWebApp.DTO.PublicationDistributionIndexDTO
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<form asp-action="Index">
+<div>
+    @Html.HiddenFor(model => model.PublicationName)
+     @Html.HiddenFor(model => model.PublicationIssue)
+    <h1>@Model.PublicationName</h1>
+    <h8>Issue no: @Model.PublicationIssue</h8>
+    @* <h5>Available quantity: @Model.Quantity</h5> *@
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @Html.HiddenFor(model=>model.PublicationId)
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                   Distributor
+                </th>
+                <th>
+                    Quantity
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PublicationDistributors)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => item.Id)
+                        @Html.HiddenFor(model => item.DistributorId)
+                        @Html.DisplayFor(modelItem => item.DistributorName)
+                    </td>
+                    <td>                        
+                        @Html.TextBoxFor(model=>item.Quantity)
+                    </td>
+                    @* <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td> *@
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+

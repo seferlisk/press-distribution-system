@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
+using PressDistributionSystemWebApp.DTO;
 
 namespace PressDistributionSystemWebApp.Controllers
 {
@@ -18,139 +19,117 @@ namespace PressDistributionSystemWebApp.Controllers
             _context = context;
         }
 
-        // GET: PublicationDistributors
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.PublicationDistributors.ToListAsync());
-        }
-
-        // GET: PublicationDistributors/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Index(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var publicationDistributor = await _context.PublicationDistributors
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (publicationDistributor == null)
+            var publication = _context.Publications.Single(x => x.Id == id);
+            if (publication == null)
             {
                 return NotFound();
             }
 
-            return View(publicationDistributor);
+            var model = new PublicationDistributionIndexDTO();
+            model.Publication.Id = publication.Id;
+            model.Publication.Name = publication.Name;
+            model.Publication.Issue = publication.Issue;
+            model.Distributors = new List<Distributor>();
+            var distributorList = await _context.Distributors.ToListAsync();
+            foreach (var distributor in distributorList)
+            {
+                var publicationDistributor = new PublicationDistributor();
+                publicationDistributor.Id = distributor.Id;
+                publicationDistributor.Distributor.Name = distributor.Name;
+                publicationDistributor.Quantity = 0;
+                model.Distributors.Add(publicationDistributor);
+            }
+            return View(model);
         }
 
-        // GET: PublicationDistributors/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: PublicationDistributors/Create
+        // POST: 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Quantity")] PublicationDistributor publicationDistributor)
+        public async Task<IActionResult> Index(int id, PublicationDistributionIndexDTO publicationDistributionDTO)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(publicationDistributor);
+                foreach (var item in publicationDistributionDTO.Distributors)
+                {
+                    var publicationDistributor = new Distributor();
+                    {   
+                        Id = id,
+                        Name = item.Name,
+                        Quantity = item.Quantity
+                    };
+
+                    _context.Add(publicationDistributor);
+                }
+
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { id = publicationDistributionDTO.PublicationId });
+
+                //_context.Add(publicationDistributor);
+                //await _context.SaveChangesAsync();
+                //return RedirectToAction(nameof(Publication));
             }
-            return View(publicationDistributor);
+            return View(publicationDistributionDTO);
         }
 
-        // GET: PublicationDistributors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        // GET:
+        //public async Task<IActionResult> Index(int id)
+        //{
+        //    var publication = _context.Publications.Single(x => x.Id == id);
+        //    var model = new PublicationDistributionIndexDTO();
+        //    model.PublicationId = publication.Id;
+        //    model.PublicationName = publication.Name;
+        //    model.PublicationIssue = publication.Issue;
+        //    model.PublicationDistributors = new List<PublicationDistributorDTO>();
+        //    var distributorList = await _context.Distributors.ToListAsync();
+        //    foreach (var distributor in distributorList)
+        //    {
+        //        var publicationDistributor = new PublicationDistributorDTO();
+        //        publicationDistributor.DistributorId = distributor.Id;
+        //        publicationDistributor.DistributorName = distributor.Name;
+        //        publicationDistributor.Quantity = 0;
+        //        model.PublicationDistributors.Add(publicationDistributor);
+        //    }            
+        //    return View(model);
+        //}       
 
-            var publicationDistributor = await _context.PublicationDistributors.FindAsync(id);
-            if (publicationDistributor == null)
-            {
-                return NotFound();
-            }
-            return View(publicationDistributor);
-        }
+        //// POST: 
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Index(int id, PublicationDistributionIndexDTO publicationDistributionDTO)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        foreach (var item in publicationDistributionDTO.PublicationDistributors)
+        //        {
+        //            var publicationDistributor = new PublicationDistributorDTO
+        //            {
+        //                Id = id,
+        //                DistributorName = item.DistributorName,
+        //                Quantity = item.Quantity
+        //            };
 
-        // POST: PublicationDistributors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Quantity")] PublicationDistributor publicationDistributor)
-        {
-            if (id != publicationDistributor.Id)
-            {
-                return NotFound();
-            }
+        //            _context.Add(publicationDistributor);
+        //        }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(publicationDistributor);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PublicationDistributorExists(publicationDistributor.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(publicationDistributor);
-        }
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index), new { id = publicationDistributionDTO.PublicationId });
 
-        // GET: PublicationDistributors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var publicationDistributor = await _context.PublicationDistributors
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (publicationDistributor == null)
-            {
-                return NotFound();
-            }
-
-            return View(publicationDistributor);
-        }
-
-        // POST: PublicationDistributors/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var publicationDistributor = await _context.PublicationDistributors.FindAsync(id);
-            if (publicationDistributor != null)
-            {
-                _context.PublicationDistributors.Remove(publicationDistributor);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool PublicationDistributorExists(int id)
-        {
-            return _context.PublicationDistributors.Any(e => e.Id == id);
-        }
+        //        //_context.Add(publicationDistributor);
+        //        //await _context.SaveChangesAsync();
+        //        //return RedirectToAction(nameof(Publication));
+        //    }
+        //    return View(publicationDistributionDTO);
+        //}
     }
 }

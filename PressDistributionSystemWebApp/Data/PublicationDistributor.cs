@@ -7,11 +7,11 @@ namespace PressDistributionSystemWebApp.Data
         public virtual int Id { get; set; }
         public virtual int Quantity { get; set; }
 
-        Distributor Distributor { get; set; }
+        public Distributor Distributor { get; set; }
 
-        Publication Publication { get; set; }
+        public Publication Publication { get; set; }
 
-        KioskPublication KioskPublication { get; set; }
+        public KioskPublication KioskPublication { get; set; }
 
     }
 }
