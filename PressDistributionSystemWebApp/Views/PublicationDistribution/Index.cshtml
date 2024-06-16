@@ -1,4 +1,4 @@
-﻿@model PressDistributionSystemWebApp.DTO.PublicationDistributionIndexDTO
+﻿@model PressDistributionSystemWebApp.DTO.PublicationDistributionDTO
 
 @{
     ViewData["Title"] = "Index";
@@ -7,10 +7,6 @@
 <form asp-action="Index">
     <div>
         @Html.HiddenFor(model => model.Publication.Id)
-        @Html.HiddenFor(model => model.Publication.Name)
-        @Html.HiddenFor(model => model.Publication.Issue)
-        @Html.HiddenFor(model => model.Publication.Quantity)
-
         <h1>@Html.DisplayFor(model => model.Publication.Name)</h1>
         <h2>Issue no: @Html.DisplayFor(model => model.Publication.Issue)</h2>
         <h5>Available quantity: @Html.DisplayFor(model => model.Publication.Quantity)</h5>
@@ -28,18 +24,17 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.PublicationDistributors.Count; i++)
+            @for (int i = 0; i < Model.Distribution.Count; i++)
             {
                 <tr>
                     <td>
-                        @Html.HiddenFor(model => Model.PublicationDistributors[i].Id)
-                        @Html.HiddenFor(model => Model.PublicationDistributors[i].DistributorId)
-                        @Html.HiddenFor(model => Model.PublicationDistributors[i].DistributorName)
-                        @Html.DisplayFor(model => Model.PublicationDistributors[i].DistributorName)
+                        @Html.HiddenFor(model => Model.Distribution[i].PublicationDistributorId)
+                        @Html.HiddenFor(model => Model.Distribution[i].DistributorId)
+                        @Html.DisplayFor(model => Model.Distribution[i].DistributorName)
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => Model.PublicationDistributors[i].Quantity)     
-                        @Html.ValidationMessageFor(model => Model.PublicationDistributors[i].Quantity, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(model => Model.Distribution[i].Quantity)     
+                        @Html.ValidationMessageFor(model => Model.Distribution[i].Quantity, "", new { @class = "text-danger" })
 
                     </td>
                 </tr>

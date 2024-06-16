@@ -10,11 +10,11 @@ using PressDistributionSystemWebApp.DTO;
 
 namespace PressDistributionSystemWebApp.Controllers
 {
-    public class PublicationDistributorsController : Controller
+    public class PublicationDistributionController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public PublicationDistributorsController(ApplicationDbContext context)
+        public PublicationDistributionController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -28,8 +28,16 @@ namespace PressDistributionSystemWebApp.Controllers
                 return NotFound();
             }
 
-            var model = new PublicationDistributionIndexDTO();
-            model.Publication = new PublicationDistributionPublicationDTO()
+            var vm = await LoadPublicationDistributionViewModel(publication);
+            return View(vm);
+        }
+
+        private async Task<PublicationDistributionDTO> LoadPublicationDistributionViewModel(Publication publication, PublicationDistributionDTO vm = null)
+        {
+            if (vm == null)
+                vm = new PublicationDistributionDTO();
+
+            vm.Publication = new PublicationDTO()
             {
                 Id = publication.Id,
                 Name = publication.Name,
@@ -37,43 +45,44 @@ namespace PressDistributionSystemWebApp.Controllers
                 Quantity = publication.Quantity
 
             };
-            model.PublicationDistributors = new List<PublicationDistributionDistributionDTO>();
+            vm.Distribution = new List<PublicationDistributionItemDTO>();
 
 
 
             foreach (var publicationDist in publication.PublicationDistributors ?? new List<PublicationDistributor>())
             {
 
-                var publicationDistributor = new PublicationDistributionDistributionDTO()
+                var publicationDistributor = new PublicationDistributionItemDTO()
                 {
                     DistributorName = publicationDist.Distributor.Name,
                     DistributorId = publicationDist.Distributor.Id,
                     Quantity = publicationDist.Quantity,
-                    Id = publicationDist.Id
+                    PublicationDistributorId = publicationDist.Id
 
                 };
 
-                model.PublicationDistributors.Add(publicationDistributor);
+                vm.Distribution.Add(publicationDistributor);
             }
 
             var distributors = await _context.Distributors.ToListAsync();
 
-            distributors = distributors.Where(x => !model.PublicationDistributors.Any(y => y.DistributorId == x.Id)).ToList();
+            distributors = distributors.Where(x => !vm.Distribution.Any(y => y.DistributorId == x.Id)).ToList();
 
             foreach (var distributor in distributors)
             {
 
 
-                var publicationDistributor = new PublicationDistributionDistributionDTO()
+                var publicationDistributor = new PublicationDistributionItemDTO()
                 {
                     DistributorName = distributor.Name,
                     DistributorId = distributor.Id,
                     Quantity = 0
                 };
 
-                model.PublicationDistributors.Add(publicationDistributor);
+                vm.Distribution.Add(publicationDistributor);
             }
-            return View(model);
+
+            return vm;
         }
 
         // POST: 
@@ -81,7 +90,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(int id, PublicationDistributionIndexDTO publicationDistributionDTO)
+        public async Task<IActionResult> Index(int id, PublicationDistributionDTO vm)
         {
             var publication = await _context.Publications.SingleOrDefaultAsync(x => x.Id == id);
             if (publication == null)
@@ -95,33 +104,30 @@ namespace PressDistributionSystemWebApp.Controllers
                 if (publication.PublicationDistributors == null)
                     publication.PublicationDistributors = new List<PublicationDistributor>();
 
-                publication.PublicationDistributors = publication.PublicationDistributors.Where(w => publicationDistributionDTO.PublicationDistributors.Any(a => a.Id == w.Id)).ToList();
-
-
-                foreach (var item in publicationDistributionDTO.PublicationDistributors)
+                foreach (var publicationVm in vm.Distribution)
                 {
-                    var publicationDistributor = publication.PublicationDistributors.SingleOrDefault(x => x.Id == item.Id);
+                    var publicationDistributor = publication.PublicationDistributors.SingleOrDefault(x => x.Id == publicationVm.PublicationDistributorId && x.Id != 0);
                     if (publicationDistributor == null)
+                    {
                         publicationDistributor = new PublicationDistributor();
+                        publication.PublicationDistributors.Add(publicationDistributor);
+                    }
 
                     publicationDistributor.Publication = publication;
-                    publicationDistributor.Distributor = await _context.Distributors.Where(w => w.Id == item.DistributorId).SingleAsync();
-                    publicationDistributor.Quantity = item.Quantity;
-                    publicationDistributor.Id = item.Id ?? 0;
-                    publication.PublicationDistributors.Add(publicationDistributor);
+                    publicationDistributor.Distributor = await _context.Distributors.Where(w => w.Id == publicationVm.DistributorId).SingleAsync();
+                    publicationDistributor.Quantity = publicationVm.Quantity;
+                    publicationDistributor.Id = publicationVm.PublicationDistributorId ?? 0;
                 }
 
 
-
-
                 await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index), new { id = publication.Id });
+                return RedirectToAction("Index", "Publications");
             }
 
-            return View(publicationDistributionDTO);
+            vm = await LoadPublicationDistributionViewModel(publication, vm);
+            return View(vm);
         }
 
-      
+
     }
 }

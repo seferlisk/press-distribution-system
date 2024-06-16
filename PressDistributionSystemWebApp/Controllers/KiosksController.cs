@@ -23,6 +23,8 @@ namespace PressDistributionSystemWebApp.Controllers
         // GET: Kiosks
         public async Task<IActionResult> Index()
         {
+
+            //TODO: if role is not admin filter by distributor
             return View(await _context.Kiosks.ToListAsync());
         }
 
@@ -54,12 +56,12 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
 
-        public IEnumerable<SelectListItem> GetDistributors()
+        public List<SelectListItem> GetDistributors()
         {
             var distributors = new List<SelectListItem>();
 
 
-            distributors.AddRange(_context.Distributors.Select(s => new SelectListItem()
+            distributors.AddRange(_context.Distributors.OrderBy(o => o.Name).Select(s => new SelectListItem()
             {
                 Value = s.Id.ToString(),
                 Text = s.Name
@@ -103,7 +105,6 @@ namespace PressDistributionSystemWebApp.Controllers
             }
             var kioskVM = new KioskUpdateDTO()
             {
-                DistributorName = kiosk.Distributor!.Name,
                 Name = kiosk.Name,
                 Id = kiosk.Id
             };

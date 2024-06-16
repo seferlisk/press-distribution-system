@@ -6,6 +6,7 @@ namespace PressDistributionSystemWebApp.Data
     {
         public virtual int Id { get; set; }
         public virtual int Quantity { get; set; }
+        public virtual int? ReturnedQuantity { get; set; }
 
 
         public virtual Kiosk? Kiosk { get; set; }

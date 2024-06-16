@@ -12,11 +12,7 @@ namespace PressDistributionSystemWebApp.DTO
 
         [Required(ErrorMessage = "The DistributorId field is required.")]
         public int DistributorId { get; set; }
-        public IEnumerable<SelectListItem>? Distributors { get; internal set; }
-
-
-
-        //public ICollection<KioskPublication> KioskPublications { get; set; }
+        public List<SelectListItem>? Distributors { get; set; }
 
     }
 }
