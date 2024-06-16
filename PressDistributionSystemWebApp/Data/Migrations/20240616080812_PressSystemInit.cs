@@ -39,7 +39,8 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShipmentDate = table.Column<DateOnly>(type: "date", nullable: false),
                     ReturnDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Issue = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Issue = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +54,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistributorId = table.Column<int>(type: "int", nullable: false)
+                    DistributorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,8 +63,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                         name: "FK_Kiosks_Distributors_DistributorId",
                         column: x => x.DistributorId,
                         principalTable: "Distributors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -73,8 +73,8 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    DistributorId = table.Column<int>(type: "int", nullable: true),
-                    PublicationId = table.Column<int>(type: "int", nullable: true)
+                    DistributorId = table.Column<int>(type: "int", nullable: false),
+                    PublicationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,12 +83,14 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                         name: "FK_PublicationDistributors_Distributors_DistributorId",
                         column: x => x.DistributorId,
                         principalTable: "Distributors",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PublicationDistributors_Publications_PublicationId",
                         column: x => x.PublicationId,
                         principalTable: "Publications",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,8 +100,8 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    KioskId = table.Column<int>(type: "int", nullable: false),
-                    PublicationDistributorId = table.Column<int>(type: "int", nullable: false)
+                    KioskId = table.Column<int>(type: "int", nullable: true),
+                    PublicationDistributorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,14 +110,12 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                         name: "FK_KioskPublications_Kiosks_KioskId",
                         column: x => x.KioskId,
                         principalTable: "Kiosks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_KioskPublications_PublicationDistributors_PublicationDistributorId",
                         column: x => x.PublicationDistributorId,
                         principalTable: "PublicationDistributors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

@@ -12,7 +12,7 @@ using PressDistributionSystemWebApp.Data;
 namespace PressDistributionSystemWebApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240507091114_PressSystemInit")]
+    [Migration("20240616080812_PressSystemInit")]
     partial class PressSystemInit
     {
         /// <inheritdoc />
@@ -20,7 +20,10 @@ namespace PressDistributionSystemWebApp.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -232,7 +235,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Distributor", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Distributor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,7 +252,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.ToTable("Distributors");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Kiosk", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Kiosk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -257,7 +260,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DistributorId")
+                    b.Property<int?>("DistributorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -271,7 +274,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.ToTable("Kiosks");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.KioskPublication", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.KioskPublication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -279,10 +282,10 @@ namespace PressDistributionSystemWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("KioskId")
+                    b.Property<int?>("KioskId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PublicationDistributorId")
+                    b.Property<int?>("PublicationDistributorId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -297,7 +300,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.ToTable("KioskPublications");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Publication", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Publication", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -313,6 +316,9 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("ReturnDate")
                         .HasColumnType("date");
 
@@ -324,7 +330,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.ToTable("Publications");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.PublicationDistributor", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.PublicationDistributor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -332,10 +338,10 @@ namespace PressDistributionSystemWebApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DistributorId")
+                    b.Property<int>("DistributorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PublicationId")
+                    b.Property<int>("PublicationId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -361,7 +367,7 @@ namespace PressDistributionSystemWebApp.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
-                    b.HasOne("PressDistributionSystemWebApp.Models.Distributor", null)
+                    b.HasOne("PressDistributionSystemWebApp.Data.Distributor", null)
                         .WithMany("Users")
                         .HasForeignKey("DistributorId");
                 });
@@ -408,48 +414,50 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Kiosk", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Kiosk", b =>
                 {
-                    b.HasOne("PressDistributionSystemWebApp.Models.Distributor", "Distributor")
+                    b.HasOne("PressDistributionSystemWebApp.Data.Distributor", "Distributor")
                         .WithMany("Kiosks")
-                        .HasForeignKey("DistributorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DistributorId");
 
                     b.Navigation("Distributor");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.KioskPublication", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.KioskPublication", b =>
                 {
-                    b.HasOne("PressDistributionSystemWebApp.Models.Kiosk", "Kiosk")
+                    b.HasOne("PressDistributionSystemWebApp.Data.Kiosk", "Kiosk")
                         .WithMany("KioskPublications")
-                        .HasForeignKey("KioskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("KioskId");
 
-                    b.HasOne("PressDistributionSystemWebApp.Models.PublicationDistributor", "PublicationDistributor")
+                    b.HasOne("PressDistributionSystemWebApp.Data.PublicationDistributor", "PublicationDistributor")
                         .WithMany()
-                        .HasForeignKey("PublicationDistributorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PublicationDistributorId");
 
                     b.Navigation("Kiosk");
 
                     b.Navigation("PublicationDistributor");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.PublicationDistributor", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.PublicationDistributor", b =>
                 {
-                    b.HasOne("PressDistributionSystemWebApp.Models.Distributor", null)
+                    b.HasOne("PressDistributionSystemWebApp.Data.Distributor", "Distributor")
                         .WithMany("PublicationDistributors")
-                        .HasForeignKey("DistributorId");
+                        .HasForeignKey("DistributorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("PressDistributionSystemWebApp.Models.Publication", null)
+                    b.HasOne("PressDistributionSystemWebApp.Data.Publication", "Publication")
                         .WithMany("PublicationDistributors")
-                        .HasForeignKey("PublicationId");
+                        .HasForeignKey("PublicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Distributor");
+
+                    b.Navigation("Publication");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Distributor", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Distributor", b =>
                 {
                     b.Navigation("Kiosks");
 
@@ -458,12 +466,12 @@ namespace PressDistributionSystemWebApp.Data.Migrations
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Kiosk", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Kiosk", b =>
                 {
                     b.Navigation("KioskPublications");
                 });
 
-            modelBuilder.Entity("PressDistributionSystemWebApp.Models.Publication", b =>
+            modelBuilder.Entity("PressDistributionSystemWebApp.Data.Publication", b =>
                 {
                     b.Navigation("PublicationDistributors");
                 });
