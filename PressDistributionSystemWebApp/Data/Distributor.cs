@@ -7,8 +7,8 @@ namespace PressDistributionSystemWebApp.Data
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
 
-        public virtual ICollection<IdentityUser>? Users { get; set; }
-        public virtual ICollection<Kiosk>? Kiosks { get; set; }
-        public virtual ICollection<PublicationDistributor>? PublicationDistributors { get; set; }
+        public virtual List<IdentityUser>? Users { get; set; }
+        public virtual List<Kiosk>? Kiosks { get; set; }
+        public virtual List<PublicationDistributor>? PublicationDistributors { get; set; }
     }
 }

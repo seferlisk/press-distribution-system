@@ -8,9 +8,9 @@ namespace PressDistributionSystemWebApp.Data
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }
 
-        public virtual Distributor Distributor { get; set; }
+        public virtual Distributor? Distributor { get; set; }
 
-        public virtual ICollection<KioskPublication>? KioskPublications { get; set; }
+        public virtual List<KioskPublication>? KioskPublications { get; set; }
 
     }
 }

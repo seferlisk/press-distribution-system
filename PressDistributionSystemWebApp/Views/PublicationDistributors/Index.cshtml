@@ -1,35 +1,53 @@
-﻿@model IEnumerable<PressDistributionSystemWebApp.Data.PublicationDistributor>
+﻿@model PressDistributionSystemWebApp.DTO.PublicationDistributionIndexDTO
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<form asp-action="Index">
+    <div>
+        @Html.HiddenFor(model => model.Publication.Id)
+        @Html.HiddenFor(model => model.Publication.Name)
+        @Html.HiddenFor(model => model.Publication.Issue)
+        @Html.HiddenFor(model => model.Publication.Quantity)
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <h1>@Html.DisplayFor(model => model.Publication.Name)</h1>
+        <h2>Issue no: @Html.DisplayFor(model => model.Publication.Issue)</h2>
+        <h5>Available quantity: @Html.DisplayFor(model => model.Publication.Quantity)</h5>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Distributor
+                </th>
+                <th>
+                    Quantity
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.PublicationDistributors.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => Model.PublicationDistributors[i].Id)
+                        @Html.HiddenFor(model => Model.PublicationDistributors[i].DistributorId)
+                        @Html.HiddenFor(model => Model.PublicationDistributors[i].DistributorName)
+                        @Html.DisplayFor(model => Model.PublicationDistributors[i].DistributorName)
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => Model.PublicationDistributors[i].Quantity)     
+                        @Html.ValidationMessageFor(model => Model.PublicationDistributors[i].Quantity, "", new { @class = "text-danger" })
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</form>
+
