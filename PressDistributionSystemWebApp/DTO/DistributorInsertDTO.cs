@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace PressDistributionSystemWebApp.DTO
@@ -8,8 +9,10 @@ namespace PressDistributionSystemWebApp.DTO
         [Required, StringLength(60, MinimumLength = 2)]
         public string Name { get; set; }
 
-        //public ICollection<IdentityUser> Users { get; set; }
-        //public ICollection<Kiosk> Kiosks { get; set; }
-        //public ICollection<PublicationDistributor> PublicationDistributors { get; set; }
+        [Required]
+        public string? DistributorUserId { get; set; }
+
+        public List<SelectListItem>? Users { get; set; }
+
     }
 }

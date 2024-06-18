@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +22,14 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Publications
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Publications.ToListAsync());
         }
 
         // GET: Publications/Details/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,6 +48,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Publications/Create
+        [Authorize(Roles = "Agency")]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +59,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Create(PublicationInsertDTO publication)
         {
             if (ModelState.IsValid)
@@ -73,6 +78,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Publications/Edit/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -100,6 +106,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Edit(int id, PublicationUpdateDTO publication)
         {
             if (id != publication.Id)
@@ -140,6 +147,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Publications/Delete/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -160,6 +168,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // POST: Publications/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var publication = await _context.Publications.FindAsync(id);

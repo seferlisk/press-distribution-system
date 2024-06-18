@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +23,23 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Kiosks
+        [Authorize]
         public async Task<IActionResult> Index()
         {
+            if(User.IsInRole("Agency"))
+            {
+                return View(await _context.Kiosks.ToListAsync());
+            }
 
-            //TODO: if role is not admin filter by distributor
-            return View(await _context.Kiosks.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var distributorId = _context.Distributors.Single(s => s.User.Id == userId).Id;
+
+            return View(await _context.Kiosks.Where(w=> w.Distributor.Id == distributorId).ToListAsync());
         }
 
         // GET: Kiosks/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,6 +58,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Kiosks/Create
+        [Authorize]
         public IActionResult Create()
         {
             var kiosk = new KioskInsertDTO();
@@ -76,6 +88,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(KioskInsertDTO kiosk)
         {
             if (ModelState.IsValid)
@@ -91,6 +104,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Kiosks/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -118,6 +132,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, KioskUpdateDTO kiosk)
         {
             if (id != kiosk.Id)
@@ -154,6 +169,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Kiosks/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -174,6 +190,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // POST: Kiosks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var kiosk = await _context.Kiosks.FindAsync(id);

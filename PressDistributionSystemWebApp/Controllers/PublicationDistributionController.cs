@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace PressDistributionSystemWebApp.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Index(int id)
         {
 
@@ -90,6 +92,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Index(int id, PublicationDistributionDTO vm)
         {
             var publication = await _context.Publications.SingleOrDefaultAsync(x => x.Id == id);

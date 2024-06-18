@@ -49,9 +49,12 @@
                     <td>
                         @Html.HiddenFor(model => Model.Distribution[i].Id)
                         @Html.HiddenFor(model => Model.Distribution[i].PublicationDistributorId)
-                        @Html.DisplayFor(model => Model.Distribution[i].PublicationName)&nbsp;(@Html.DisplayFor(model => Model.Distribution[i].PublicationIssue))
+                        <b>@Html.DisplayFor(model => Model.Distribution[i].PublicationName)</b>&nbsp;(@Html.DisplayFor(model => Model.Distribution[i].PublicationIssue))
                         <br />
-                        Remaining @Html.DisplayFor(model => Model.Distribution[i].RemainingQuantity) from @Html.DisplayFor(model => Model.Distribution[i].TotalQuantity)
+                        <small>Remaining @Html.DisplayFor(model => Model.Distribution[i].RemainingQuantity) from @Html.DisplayFor(model => Model.Distribution[i].TotalQuantity)</small>
+                        <br />
+                        <small>Shipment @Model.Distribution[i].PublicationShipmentDate, Return @Model.Distribution[i].PublicationReturnDate</small>
+
                     </td>
                     <td>
                         @Html.TextBoxFor(model => Model.Distribution[i].Quantity)

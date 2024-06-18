@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,7 @@ namespace PressDistributionSystemWebApp.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "Distributor")]
         public async Task<IActionResult> Index(int id, DateOnly? date = null)
         {
 
@@ -51,13 +54,16 @@ namespace PressDistributionSystemWebApp.Controllers
                 Name = kiosk.Name
             };
 
-            vm.DistributorId = _context.Distributors.First().Id;
+            //Get User id from logged in user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            vm.DistributorId = _context.Distributors.Single(s => s.User.Id == userId).Id;
 
 
 
             vm.Distribution = new List<KioskDistributionItemDTO>();
 
-            var kioskPublications = kiosk.KioskPublications?.Where(w => w.PublicationDistributor.Publication.ShipmentDate == date).ToList();
+            var kioskPublications = kiosk.KioskPublications?.Where(w => w.PublicationDistributor.Publication.ShipmentDate == date || w.PublicationDistributor.Publication.ReturnDate == date).ToList();
 
             foreach (var kioskPublication in kioskPublications ?? new List<KioskPublication>())
             {
@@ -69,13 +75,15 @@ namespace PressDistributionSystemWebApp.Controllers
                     PublicationDistributorId = kioskPublication.PublicationDistributor.Id,
                     Quantity = kioskPublication.Quantity,
                     ReturnedQuantity = kioskPublication.ReturnedQuantity,
-                    PublicationIssue = kioskPublication.PublicationDistributor.Publication.Issue
+                    PublicationIssue = kioskPublication.PublicationDistributor.Publication.Issue,
+                    PublicationShipmentDate = kioskPublication.PublicationDistributor.Publication.ShipmentDate,
+                    PublicationReturnDate = kioskPublication.PublicationDistributor.Publication.ReturnDate
                 };
 
                 vm.Distribution.Add(KioskPublicationDTO);
             }
 
-            var distributorPublications = await _context.PublicationDistributors.Where(w => w.Publication.ShipmentDate == date.Value && w.Distributor.Id == vm.DistributorId).ToListAsync();
+            var distributorPublications = await _context.PublicationDistributors.Where(w => (w.Publication.ShipmentDate == date.Value || w.Publication.ReturnDate == date.Value) && w.Distributor.Id == vm.DistributorId).ToListAsync();
             //filter out the publications that are already in the list
             distributorPublications = distributorPublications.Where(x => !vm.Distribution.Any(y => y.PublicationDistributorId == x.Id)).ToList();
 
@@ -90,6 +98,8 @@ namespace PressDistributionSystemWebApp.Controllers
                     Quantity = null,
                     ReturnedQuantity = null,
                     PublicationIssue = distributorPublication.Publication.Issue,
+                    PublicationShipmentDate = distributorPublication.Publication.ShipmentDate,
+                    PublicationReturnDate = distributorPublication.Publication.ReturnDate
 
                 };
 
@@ -116,6 +126,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Distributor")]
         public async Task<IActionResult> Index(int id, KioskDistributionDTO vm, DateOnly? date = null)
         {
             var kiosk = await _context.Kiosks.SingleOrDefaultAsync(x => x.Id == id);
