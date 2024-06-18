@@ -19,6 +19,12 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="DistributorUserId" class="control-label">Distributor</label>
+                @Html.DropDownListFor(m => m.DistributorUserId, Model.Users, "")
+                <br />
+                <span asp-validation-for="DistributorUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

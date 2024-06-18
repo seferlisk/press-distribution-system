@@ -31,6 +31,8 @@ namespace PressDistributionSystemWebApp.DTO
         public string? PublicationName { get; set; }
 
         public string? PublicationIssue { get; set; }
+        public DateOnly? PublicationShipmentDate { get; set; }
+        public DateOnly? PublicationReturnDate { get; set; }
 
         [Required]
         public int? PublicationDistributorId { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +22,14 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Distributors
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Distributors.ToListAsync());
         }
 
         // GET: Distributors/Details/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,9 +48,14 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Distributors/Create
+        [Authorize(Roles = "Agency")]
         public IActionResult Create()
         {
-            return View();
+
+            var distributor = new DistributorInsertDTO();
+            distributor.Users = GetUsers();
+
+            return View(distributor);
         }
 
         // POST: Distributors/Create
@@ -55,20 +63,25 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Create(DistributorInsertDTO distributor)
         {
             if (ModelState.IsValid)
             {
                 var insertedDistributor = new Distributor();
                 insertedDistributor.Name = distributor.Name;
+                insertedDistributor.User = _context.Users.FirstOrDefault(f => f.Id == distributor.DistributorUserId);
                 _context.Add(insertedDistributor);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            distributor.Users = GetUsers();
+
             return View(distributor);
         }
 
         // GET: Distributors/Edit/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,7 +97,24 @@ namespace PressDistributionSystemWebApp.Controllers
 
             var updatedDistributor = new DistributorUpdateDTO();
             updatedDistributor.Name = distributor.Name;
+            updatedDistributor.DistributorUserId = distributor.User?.Id; 
+            updatedDistributor.Users = GetUsers();
             return View(updatedDistributor);
+        }
+
+        public List<SelectListItem> GetUsers()
+        {
+            var distributors = new List<SelectListItem>();
+
+
+            distributors.AddRange(_context.Users.OrderBy(o => o.UserName).Select(s => new SelectListItem()
+            {
+                Value = s.Id.ToString(),
+                Text = s.UserName
+            }));
+
+
+            return distributors;
         }
 
         // POST: Distributors/Edit/5
@@ -92,6 +122,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Edit(int id, DistributorUpdateDTO distributor)
         {
             if (id != distributor.Id)
@@ -109,6 +140,7 @@ namespace PressDistributionSystemWebApp.Controllers
                         return NotFound();
                     }
                     distributorToUpdate.Name = distributor.Name;                    
+                    distributorToUpdate.User = _context.Users.FirstOrDefault(f => f.Id == distributor.DistributorUserId);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -124,10 +156,13 @@ namespace PressDistributionSystemWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            distributor.Users = GetUsers();
+
             return View(distributor);
         }
 
         // GET: Distributors/Delete/5
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -148,6 +183,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // POST: Distributors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var distributor = await _context.Distributors.FindAsync(id);
