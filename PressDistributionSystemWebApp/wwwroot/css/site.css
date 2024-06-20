@@ -17,6 +17,13 @@ html {
   min-height: 100%;
 }
 
+.navbar-brand {
+    font-family: 'Times New Roman', sans-serif;
+    font-size: 24px;
+    font-style:italic;
+    color: #0000CD !important;
+}
+
 body {
   margin-bottom: 60px;
 }
