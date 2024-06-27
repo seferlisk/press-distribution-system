@@ -58,7 +58,7 @@ namespace PressDistributionSystemWebApp.Controllers
         }
 
         // GET: Kiosks/Create
-        [Authorize]
+        [Authorize(Roles = "Agency")]
         public IActionResult Create()
         {
             var kiosk = new KioskInsertDTO();
@@ -88,7 +88,7 @@ namespace PressDistributionSystemWebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Agency")]
         public async Task<IActionResult> Create(KioskInsertDTO kiosk)
         {
             if (ModelState.IsValid)

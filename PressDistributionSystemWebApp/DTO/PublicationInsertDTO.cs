@@ -19,6 +19,5 @@ namespace PressDistributionSystemWebApp.DTO
         [Required]
         public int Quantity { get; set; }
 
-        //public ICollection<PublicationDistributor> PublicationDistributors { get; set; }
     }
 }

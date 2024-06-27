@@ -20,20 +20,19 @@
             </div>
             <div class="form-group">
                 <label asp-for="DistributorUserId" class="control-label">Distributor</label>
-                @Html.DropDownListFor(m => m.DistributorUserId, Model.Users, "")
+                @Html.DropDownListFor(m => m.DistributorUserId, Model.Users, "Select Distributor", new { @class = "form-control custom-dropdown" })
                 <br />
                 <span asp-validation-for="DistributorUserId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <br />
+            <div class="btn-group" role="group" aria-label="Form buttons">
+                <a class="btn btn-secondary" asp-action="Index">Back</a>
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
