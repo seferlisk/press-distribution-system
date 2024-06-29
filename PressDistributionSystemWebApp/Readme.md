@@ -12,26 +12,28 @@ To achieve this:
 
 This is an Asp.Net project. To run it, you need to have Visual Studio installed. You can download it [here](https://visualstudio.microsoft.com/downloads/).
 
-It uses entity framework to connect to a SQL Server database. The connection string is in the `appsettings.json` file. You can change it to your own database.
+It uses entity framework to connect to an SQL Server database. The connection string is in the `appsettings.json` file. You can change it to your own database.
 
 You can find the database initialization script in Data folder. (PressDistributionSystemInitScript.sql)
 
 ## Usage
 
 Login as an agency user with the following credentials:
+
 - Username: AgencyUser1@email.com
-- Password: 1234
+- Password: 123456
  
 - Username: AgencyUser2@email.com
-- Password: 1234
+- Password: 123456
 
 
 Login as an distributor user with the following credentials:
+
 - Username: distributor1@email.com
-- Password: 1234
+- Password: 123456
 
 - Username: distributor2@email.com
-- Password: 1234
+- Password: 123456
 
 - Username: distributor3@email.com
-- Password: 1234
+- Password: 123456
