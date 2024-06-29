@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging.Signing;
 using PressDistributionSystemWebApp.Data;
 using PressDistributionSystemWebApp.DTO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PressDistributionSystemWebApp.Controllers
 {
@@ -21,6 +23,12 @@ namespace PressDistributionSystemWebApp.Controllers
             _context = context;
         }
 
+
+        /*
+         * Handles GET requests to display the distribution data for a specific kiosk.
+         */
+
+        //Only users in the "Distributor" role can access this action.
         [Authorize(Roles = "Distributor")]
         public async Task<IActionResult> Index(int id, DateOnly? date = null)
         {
@@ -38,6 +46,9 @@ namespace PressDistributionSystemWebApp.Controllers
             return View(vm);
         }
 
+        /*
+         * A private method to load and prepare the distribution data into a KioskDistributionDTO view model.
+         */
         private async Task<KioskDistributionDTO> LoadKioskDistributionDTO(Kiosk kiosk, DateOnly? date, KioskDistributionDTO? vm = null)
         {
             if (vm == null)
@@ -54,17 +65,15 @@ namespace PressDistributionSystemWebApp.Controllers
                 Name = kiosk.Name
             };
 
-            //Get User id from logged in user
+            //Retrieves the logged-in user's ID and their distributor ID.
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             vm.DistributorId = _context.Distributors.Single(s => s.User.Id == userId).Id;
 
-
-
-            vm.Distribution = new List<KioskDistributionItemDTO>();
-
-            var kioskPublications = kiosk.KioskPublications?.Where(w => w.PublicationDistributor.Publication.ShipmentDate == date || w.PublicationDistributor.Publication.ReturnDate == date).ToList();
-
+            //Loads the existing distribution data for the kiosk.
+            vm.Distribution = new List<KioskDistributionItemDTO>();           
+           
+            var kioskPublications = kiosk.KioskPublications?.Where(w => w.PublicationDistributor.Publication.ShipmentDate == date || w.PublicationDistributor.Publication.ReturnDate == date).ToList();            
+          
             foreach (var kioskPublication in kioskPublications ?? new List<KioskPublication>())
             {
 
@@ -84,7 +93,7 @@ namespace PressDistributionSystemWebApp.Controllers
             }
 
             var distributorPublications = await _context.PublicationDistributors.Where(w => (w.Publication.ShipmentDate == date.Value || w.Publication.ReturnDate == date.Value) && w.Distributor.Id == vm.DistributorId).ToListAsync();
-            //filter out the publications that are already in the list
+            //Retrieves additional publications for the distributor that are not yet associated with the kiosk.
             distributorPublications = distributorPublications.Where(x => !vm.Distribution.Any(y => y.PublicationDistributorId == x.Id)).ToList();
 
             foreach (var distributorPublication in distributorPublications)
@@ -106,7 +115,7 @@ namespace PressDistributionSystemWebApp.Controllers
                 vm.Distribution.Add(KioskPublicationDTO);
             }
 
-            //Calculate the remaining quantity
+            //Calculates the remaining quantity for each publication.
             foreach (var item in vm.Distribution)
             {
                 item.TotalQuantity = _context.PublicationDistributors.First(f => f.Id == item.PublicationDistributorId).Quantity;
@@ -114,13 +123,16 @@ namespace PressDistributionSystemWebApp.Controllers
                 item.RemainingQuantity = item.TotalQuantity - usedQuantity + (item.Quantity ?? 0);
             }
 
-
+            //Orders the distribution data by publication name and returns the view model.
             vm.Distribution = vm.Distribution.OrderBy(o => o.PublicationName).ToList();
 
             return vm;
         }
 
 
+        /*
+         * Handles POST requests to update the distribution data for a specific kiosk.
+         */
         // POST: 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -141,9 +153,10 @@ namespace PressDistributionSystemWebApp.Controllers
                 if (kiosk.KioskPublications == null)
                     kiosk.KioskPublications = new List<KioskPublication>();
 
-
+                //Iterates over the submitted distribution data.
                 foreach (var publicationDTO in vm.Distribution ?? new List<KioskDistributionItemDTO>())
                 {
+                    //Updates existing publications or adds new ones as necessary.
                     var Kioskpublication = kiosk.KioskPublications.SingleOrDefault(x => x.Id == publicationDTO.Id && x.Id != 0);
                     if (Kioskpublication == null)
                     {
@@ -151,6 +164,7 @@ namespace PressDistributionSystemWebApp.Controllers
                         kiosk.KioskPublications.Add(Kioskpublication);
                     }
 
+                    //Updates each publication's properties.
                     Kioskpublication.Kiosk = kiosk;
                     Kioskpublication.PublicationDistributor = await _context.PublicationDistributors.SingleAsync(s => s.Id == publicationDTO.PublicationDistributorId);
                     Kioskpublication.Quantity = publicationDTO.Quantity ?? 0;
@@ -159,14 +173,11 @@ namespace PressDistributionSystemWebApp.Controllers
 
                 }
 
-
-
-
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Index", "Kiosks");
             }
-
+            //If the model state is invalid, reloads the view model and returns the view for the user to correct the errors.
             vm = await LoadKioskDistributionDTO(kiosk, date);
 
             return View(vm);
