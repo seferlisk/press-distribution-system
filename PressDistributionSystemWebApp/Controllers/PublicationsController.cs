@@ -92,12 +92,16 @@ namespace PressDistributionSystemWebApp.Controllers
                 return NotFound();
             }
 
-            var updatedPublication = new PublicationUpdateDTO();
-            updatedPublication.Name = publication.Name;
-            updatedPublication.ShipmentDate = publication.ShipmentDate;
-            updatedPublication.ReturnDate = publication.ReturnDate;
-            updatedPublication.Issue = publication.Issue;
-            updatedPublication.Quantity= publication.Quantity;
+            var updatedPublication = new PublicationUpdateDTO()
+            {
+                Id = publication.Id, 
+                Name = publication.Name,
+                ShipmentDate = publication.ShipmentDate,
+                ReturnDate = publication.ReturnDate,
+                Issue = publication.Issue,
+                Quantity = publication.Quantity
+            };
+
             return View(updatedPublication);
         }
 
