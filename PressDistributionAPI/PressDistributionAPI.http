@@ -1,0 +1,6 @@
+@PressDistributionAPI_HostAddress = http://localhost:5283
+
+GET {{PressDistributionAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
