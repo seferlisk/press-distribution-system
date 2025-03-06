@@ -33,6 +33,7 @@ namespace PressDistributionSystemWebApp
             })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -60,11 +61,7 @@ namespace PressDistributionSystemWebApp
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-
             app.MapRazorPages();
-
-
 
             app.Run();
 
