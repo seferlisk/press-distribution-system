@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
