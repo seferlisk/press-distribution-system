@@ -21,7 +21,7 @@ namespace PressDistributionAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var publications = await _context.Publications.ToListAsync();
-            return Ok(publications); // Returns JSON response
+            return Ok(publications); 
         }
 
         [HttpGet("{id}")]
