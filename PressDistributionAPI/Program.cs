@@ -4,11 +4,10 @@ using PressDistributionSystemWebApp.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy("AllowAngular",
                       policy =>
                       {
                           policy.WithOrigins("http://localhost:4200")
@@ -35,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors("AllowAngular");
 
 app.UseHttpsRedirection();
 
