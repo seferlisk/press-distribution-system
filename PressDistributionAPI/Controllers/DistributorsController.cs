@@ -15,7 +15,7 @@ namespace PressDistributionAPI.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public DistributorsApiController(ApplicationDbContext context)
+        public DistributorsController(ApplicationDbContext context)
         {
             _context = context;
         }
