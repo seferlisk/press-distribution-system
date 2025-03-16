@@ -11,6 +11,7 @@ namespace PressDistributionAPI.Controllers
 {
     [Route("api/distributors")]
     [ApiController]
+    [AllowAnonymous]
     public class DistributorsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
