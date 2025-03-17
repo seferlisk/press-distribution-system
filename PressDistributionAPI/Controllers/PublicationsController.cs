@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PressDistributionSystemWebApp.Data;
@@ -8,6 +9,7 @@ namespace PressDistributionAPI.Controllers
 {
     [Route("api/publications")]
     [ApiController]
+    [AllowAnonymous]
     public class PublicationsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
