@@ -9,7 +9,7 @@ namespace PressDistributionAPI.Controllers
 {
     [Route("api/publications")]
     [ApiController]
-    [AllowAnonymous]
+    [AllowAnonymous] 
     public class PublicationsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
